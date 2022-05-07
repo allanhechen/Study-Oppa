@@ -336,7 +336,6 @@ async def load_preferences(member, channel):
     settings["color"] = 0x6bb3ff
     with p.open("w") as f:
       json.dump(settings, f)
-    await help(member, channel)
     return settings
 
 async def help(member, channel):
