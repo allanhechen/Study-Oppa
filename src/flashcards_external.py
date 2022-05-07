@@ -12,13 +12,49 @@ async def study(client, member, channel):
     return
   prefix = "flashcards\\" + str(member.id) + "\\"
   
-  embed=discord.Embed(title="Available flashcards:", color=0x6bb3ff)
+  embed=discord.Embed(title="Available flashcards:", description="\"stop\" to exit", color=0x6bb3ff)
   for path in p.iterdir():
     name = str(path).removeprefix(prefix)[:-5]
     last_modified = datetime.datetime.fromtimestamp(path.stat().st_ctime)
     embed.add_field(name=name, value=last_modified, inline=False)
   await channel.send(embed=embed)
 
+  def check(m):
+    return m.author == member and m.channel == channel
+
+  selection = await client.wait_for('message', check=check)
+  selection = selection.content
+
+  if (selection == exit):
+    return
+
+  p = p / (selection + ".json")
+  if not p.exists():
+    embed=discord.Embed(title="Invalid Selection", color=0x6bb3ff)
+    await channel.send(embed=embed)
+    study(client, member, channel)
+  
+  data = None
+  with p.open("r") as f:
+    data = json.load(f)
+
+  data = sorted(data, key=lambda x: x["priority"])
+  
+  cont = 1
+  while cont:
+    for question in data:
+      embed=discord.Embed(title="Question: " + question["question"], color=0x6bb3ff)
+      await channel.send(embed=embed)
+      await client.wait_for('message', check=check)
+      embed=discord.Embed(title="Expected Answer: " + question["answer"], color=0x6bb3ff)
+      await channel.send(embed=embed)
+    
+    embed=discord.Embed(title="End of flashcards in " + selection + ".", description="Type \"continue\" to start again.", color=0x6bb3ff)
+    await channel.send(embed=embed)
+    reply = await client.wait_for('message', check=check)
+    reply = reply.content.lower()
+    if reply != "continue":
+      cont = 0
   
 
 async def add(client, member, channel):
