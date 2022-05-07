@@ -6,6 +6,9 @@ from discord.ext import commands
 
 async def study(client, member, channel):
   p = get_default_path(member)
+  preferences = load_preferences(member)
+  timeout = preferences["timeout"]
+  
   if not p.exists() or sum([1 for f in p.iterdir()]) == 0:
     embed=discord.Embed(title="You have no flashcards!", description="use \"!flashcards add\" to add some!", color=0x6bb3ff)
     await channel.send(embed=embed)
@@ -138,11 +141,82 @@ async def add(client, member, channel):
     embed=discord.Embed(title="Category " + name + " added.", color=0x6bb3ff)
     await channel.send(embed=embed)
 
-async def remove(member, channel):
-  pass
+async def remove(client, member, channel):
+  def check(m):
+    return m.author == member and m.channel == channel
+  embed=discord.Embed(title="Please enter an item to remove.", description="Type \"stop\" to exit", color=0x6bb3ff)
+  embed.add_field(name="Question", value="Remove a question from a section", inline=False)
+  embed.add_field(name="Section", value="Remove an entire section", inline=False)
+  await channel.send(embed=embed)
+  selection = await client.wait_for('message', check=check)
+  selection = selection.content
+  if selection == "stop":
+    return
+  elif selection == "question":
+    p = get_default_path(member)
+    section = await get_options(client, member, channel)
+    if section == -1:
+      return
+    p = p / section
+    data = None
+    with p.open("r") as f:
+      data = json.load(f)
+    embed=discord.Embed(title="Please enter the question.")
+    await channel.send(embed=embed)
+    question = await client.wait_for('message', check=check)
+    question = question.content
+    for i in range(len(data)):
+      if data[i]["question"] == question:
+        data.pop(i)
+    with p.open("w") as f:
+      data = json.dump(data, f)
+    embed=discord.Embed(title="Question " + question + " removed.", color=0x6bb3ff)
+    await channel.send(embed=embed)
+    return
+  elif selection == "section":
+    p = get_default_path(member)
+    section = await get_options(client, member, channel)
+    if section == -1:
+      return
+    p = p / section
+    p.unlink()
+    embed=discord.Embed(title="Section " + section[:-5] + " removed.", color=0x6bb3ff)
+    await channel.send(embed=embed)
+    return
+  else:
+    embed=discord.Embed(title="Invalid option.", description="Type \"stop\" to exit.", color=0x6bb3ff)
+    await channel.send(embed=embed)
+    await remove(client, member, channel)
 
 async def change_preferences(member, channel):
   pass
 
 def get_default_path(member):
   return pathlib.Path("flashcards/" + str(member.id))
+
+async def get_options(client, member, channel):
+  p = get_default_path(member)
+
+  if not p.exists() or sum([1 for f in p.iterdir()]) == 0:
+    embed=discord.Embed(title="You have no flashcards!", color=0x6bb3ff)
+    await channel.send(embed=embed)
+    return -1
+  prefix = "flashcards\\" + str(member.id) + "\\"
+  
+  embed=discord.Embed(title="Available flashcards:", description="Type \"stop\" to exit", color=0x6bb3ff)
+  for path in p.iterdir():
+    name = str(path).removeprefix(prefix)[:-5]
+    last_modified = datetime.datetime.fromtimestamp(path.stat().st_ctime)
+    embed.add_field(name=name, value=last_modified, inline=False)
+  await channel.send(embed=embed)
+
+  def check(m):
+    return m.author == member and m.channel == channel
+
+  selection = await client.wait_for('message', check=check)
+  return selection.content + ".json"
+
+async def load_preferences(member):
+  p = pathlib.Path("config/" + str(member.id) + ".json")
+  with p.open("r") as f:
+    return json.load(f)

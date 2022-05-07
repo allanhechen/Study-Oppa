@@ -45,7 +45,7 @@ async def flashcards(ctx, arg1 = ""):
   elif arg1 == "add":
     await flashcards_external.add(client, member, channel)
   elif arg1 == "remove":
-    print("remove")
+    await flashcards_external.remove(client, member, channel)
   elif arg1 == "change preferences":
     print("change preferences")
   else:
