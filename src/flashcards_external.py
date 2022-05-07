@@ -108,8 +108,8 @@ async def add(client, member, channel):
   
   name = await client.wait_for('message', check=check)
   name = name.content
-  name.replace("<>:\"/\\|?*;", "")
-  name.replace(" ", "_")
+  name = name.replace("<", "").replace(">", "").replace(":", "").replace("\"", "").replace("/", "").replace("\\", "").replace("|", "").replace("?", "").replace("*", "")
+  # name.replace(" ", "_")
 
   output = []
   while 1:
@@ -146,6 +146,3 @@ async def change_preferences(member, channel):
 
 def get_default_path(member):
   return pathlib.Path("flashcards/" + str(member.id))
-
-async def iterate_questions(client, channel, questions):
-  pass
