@@ -272,7 +272,7 @@ async def change_preferences(client, member, channel):
       return
     new_color = int(new_color.content, 16)
     preferences["color"] = new_color
-    embed=discord.Embed(title="Your new color is " + str(hex(new_color)), color=color)
+    embed=discord.Embed(title="Your new color is " + str(hex(new_color)), color=new_color)
     await channel.send(embed=embed)
   elif selection == "timeout":
     embed=discord.Embed(title="Enter your new timeout (15s default)", description="Current timeout is " + str(timeout), color=color)
