@@ -2,6 +2,7 @@ import discord
 import json
 import pathlib
 import datetime
+import asyncio
 from discord.ext import commands
 
 async def study(client, member, channel):
@@ -25,8 +26,11 @@ async def study(client, member, channel):
 
   def check(m):
     return m.author == member and m.channel == channel
-
-  selection = await client.wait_for('message', check=check, timeout=timeout)
+  
+  try:
+    selection = await client.wait_for('message', check=check, timeout=timeout)
+  except asyncio.exceptions.TimeoutError:
+    return
   selection = selection.content
 
   if (selection == exit):
@@ -53,13 +57,19 @@ async def study(client, member, channel):
     for question in data:
       embed=discord.Embed(title="Question: " + question["question"], color=color)
       await channel.send(embed=embed)
-      await client.wait_for('message', check=check)
+      try:
+        await client.wait_for('message', check=check)
+      except asyncio.exceptions.TimeoutError:
+        return
       embed=discord.Embed(title="Expected Answer: " + question["answer"], color=color)
       sent_message = await channel.send(embed=embed)
       await sent_message.add_reaction('🔴')
       await sent_message.add_reaction('🟡')
       await sent_message.add_reaction('🟢')
-      reaction = await client.wait_for('reaction_add', check=reaction_check, timeout=timeout)
+      try:
+        reaction = await client.wait_for('reaction_add', check=reaction_check, timeout=timeout)
+      except asyncio.exceptions.TimeoutError:
+        return
       reaction = reaction[0].emoji
       if reaction == '🔴':
         question["priority"] = max(question["priority"] - 1, 1)
@@ -69,7 +79,10 @@ async def study(client, member, channel):
     
     embed=discord.Embed(title="End of flashcards in " + selection + ".", description="Type \"continue\" to start again.", color=color)
     await channel.send(embed=embed)
-    reply = await client.wait_for('message', check=check, timeout=timeout)
+    try:
+      reply = await client.wait_for('message', check=check, timeout=timeout)
+    except asyncio.exceptions.TimeoutError:
+      return
     reply = reply.content.lower()
     if reply != "continue":
       cont = 0
@@ -77,19 +90,28 @@ async def study(client, member, channel):
   if len(next) > 0:
     embed=discord.Embed(title="Go through hard questions again?" , description="Type \"yes\" to proceed.", color=color)
     await channel.send(embed=embed)
-    message = await client.wait_for('message', check=check, timeout=timeout)
+    try:
+      message = await client.wait_for('message', check=check, timeout=timeout)
+    except asyncio.exceptions.TimeoutError:
+      return
     message = message.content.lower()
     if message == "yes":
       for question in next:
         embed=discord.Embed(title="Question: " + question["question"], color=color)
         await channel.send(embed=embed)
-        await client.wait_for('message', check=check, timeout=timeout)
+        try:
+          await client.wait_for('message', check=check, timeout=timeout)
+        except asyncio.exceptions.TimeoutError:
+          return
         embed=discord.Embed(title="Expected Answer: " + question["answer"], color=color)
         sent_message = await channel.send(embed=embed)
         await sent_message.add_reaction('🔴')
         await sent_message.add_reaction('🟡')
         await sent_message.add_reaction('🟢')
-        reaction = await client.wait_for('reaction_add', check=reaction_check, timeout=timeout)
+        try:
+          reaction = await client.wait_for('reaction_add', check=reaction_check, timeout=timeout)
+        except asyncio.exceptions.TimeoutError:
+          return
         reaction = reaction[0].emoji
         if reaction == '🔴':
           question["priority"] = max(question["priority"] - 1, 1)
@@ -112,8 +134,11 @@ async def add(client, member, channel):
 
   embed=discord.Embed(title="Enter category name:", color=color)
   await channel.send(embed=embed)
-  
-  name = await client.wait_for('message', check=check, timeout=timeout)
+
+  try:
+    name = await client.wait_for('message', check=check, timeout=timeout)
+  except asyncio.exceptions.TimeoutError:
+    return
   name = name.content
   name = name.replace("<", "").replace(">", "").replace(":", "").replace("\"", "").replace("/", "").replace("\\", "").replace("|", "").replace("?", "").replace("*", "")
   # name.replace(" ", "_")
@@ -122,7 +147,10 @@ async def add(client, member, channel):
   while 1:
     embed=discord.Embed(title="Please enter a question:", description="\"stop\" to exit", color=color)
     await channel.send(embed=embed)
-    question = await client.wait_for('message', check=check, timeout=timeout)
+    try:
+      question = await client.wait_for('message', check=check, timeout=timeout)
+    except asyncio.exceptions.TimeoutError:
+      return
     question = question.content
     
     if question == "stop":
@@ -130,7 +158,10 @@ async def add(client, member, channel):
 
     embed=discord.Embed(title="Please enter an answer:", color=color)
     await channel.send(embed=embed)
-    answer = await client.wait_for('message', check=check, timeout=timeout)
+    try:
+      answer = await client.wait_for('message', check=check, timeout=timeout)
+    except asyncio.exceptions.TimeoutError:
+      return
     answer = answer.content
     current = {}
     current["question"] = question
@@ -157,7 +188,10 @@ async def remove(client, member, channel):
   embed.add_field(name="Question", value="Remove a question from a section", inline=False)
   embed.add_field(name="Section", value="Remove an entire section", inline=False)
   await channel.send(embed=embed)
-  selection = await client.wait_for('message', check=check)
+  try:
+    selection = await client.wait_for('message', check=check)
+  except asyncio.exceptions.TimeoutError:
+    return
   selection = selection.content
   if selection == "stop":
     return
@@ -172,7 +206,10 @@ async def remove(client, member, channel):
       data = json.load(f)
     embed=discord.Embed(title="Please enter the question.")
     await channel.send(embed=embed)
-    question = await client.wait_for('message', check=check, timeout=timeout)
+    try:
+      question = await client.wait_for('message', check=check, timeout=timeout)
+    except asyncio.exceptions.TimeoutError:
+      return
     question = question.content
     for i in range(len(data)):
       if data[i]["question"] == question:
@@ -210,19 +247,36 @@ async def change_preferences(client, member, channel):
   embed.add_field(name="Color", value="Change the embed color.", inline=False)
   embed.add_field(name="Timeout", value="Change the amount of time you have to respond to questions.", inline=False)
   await channel.send(embed=embed)
-  selection = await client.wait_for('message', check=check, timeout=timeout)
+  try:
+    selection = await client.wait_for('message', check=check, timeout=timeout)
+  except asyncio.exceptions.TimeoutError:
+    return
   selection = selection.content.lower()
 
   if selection == "color":
-    embed=discord.Embed(title="Enter your new color (0x6bb3ff by default).", color=color)
-    new_color = await client.wait_for('message', check=check, timeout=timeout)
-    new_color = hex(new_color.content)
+    embed=discord.Embed(title="Enter your new color (0x6bb3ff by default).", description="Current color is " + str(hex(color)), color=color)
+    await channel.send(embed=embed)
+    try:
+      new_color = await client.wait_for('message', check=check, timeout=timeout)
+    except asyncio.exceptions.TimeoutError:
+      return
+    new_color = int(new_color.content, 16)
     preferences["color"] = new_color
+    embed=discord.Embed(title="Your new color is " + str(hex(new_color)), color=color)
+    await channel.send(embed=embed)
+    return
   elif selection == "timeout":
-    embed=discord.Embed(title="Enter your new timeout (15s default).", color=color)
-    new_timeout = await client.wait_for('message', check=check, timeout=timeout)
+    embed=discord.Embed(title="Enter your new timeout (15s default).", description="Current timeout is " + str(timeout), color=color)
+    await channel.send(embed=embed)
+    try:
+      new_timeout = await client.wait_for('message', check=check, timeout=timeout)
+    except asyncio.exceptions.TimeoutError:
+      return
     new_timeout = int(new_timeout.content)
     preferences["timeout"] = new_timeout
+    embed=discord.Embed(title="Your new timeout is " + str(new_timeout), color=color)
+    await channel.send(embed=embed)
+    return
   else:
     embed=discord.Embed(title="Invalid Option.", color=color)
     await channel.send(embed=embed)
@@ -256,7 +310,10 @@ async def get_options(client, member, channel):
   def check(m):
     return m.author == member and m.channel == channel
 
-  selection = await client.wait_for('message', check=check, timeout=timeout)
+  try:
+    selection = await client.wait_for('message', check=check, timeout=timeout)
+  except asyncio.exceptions.TimeoutError:
+    return
   return selection.content + ".json"
 
 async def load_preferences(member, channel):

@@ -1,3 +1,4 @@
+import asyncio
 import discord
 import json
 from discord.ext import commands
@@ -30,14 +31,19 @@ async def flashcards(ctx, arg1 = "", arg2 = ""):
   if arg1 == "":
     def check(m):
       return m.author == ctx.author and m.channel == ctx.channel
+    preferences = await flashcards_external.load_preferences(ctx.author, ctx.channel)
+    color = preferences["color"]
+    timeout = preferences["timeout"]
 
-    embed=discord.Embed(title="Please select an option:", color=0x6bb3ff)
+    embed=discord.Embed(title="Please select an option:", color=color)
     embed.add_field(name="Study", value="Study available flashcards", inline=False)
     embed.add_field(name="Add", value="Add new flashcards", inline=False)
     embed.add_field(name="Remove", value="Remove existing flashcards", inline=False)
     await ctx.send(embed=embed)
-
-    arg1 = await client.wait_for('message', check=check)
+    try:
+      arg1 = await client.wait_for('message', check=check, timeout=timeout)
+    except asyncio.exceptions.TimeoutError:
+      return
     arg1 = arg1.content.strip().lower()
 
   if arg1 == "study":
@@ -46,8 +52,10 @@ async def flashcards(ctx, arg1 = "", arg2 = ""):
     await flashcards_external.add(client, member, channel)
   elif arg1 == "remove":
     await flashcards_external.remove(client, member, channel)
-  elif arg1 == "change" and arg2 == "preferences":
+  elif arg1 == "change" and arg2 == "preferences" or arg1 == "change preferences":
     await flashcards_external.change_preferences(client, member, channel)
+  elif arg1 == "stop":
+    return
   else:
     embed = discord.Embed(title="Invalid Option")
     await ctx.send(embed=embed)
