@@ -52,5 +52,4 @@ async def flashcards(ctx, arg1 = ""):
     embed = discord.Embed(title="Invalid Option")
     await ctx.send(embed=embed)
 
-
 init()
