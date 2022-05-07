@@ -33,7 +33,8 @@ async def study(client, member, channel):
   color = preferences["color"]
 
   if not p.exists() or sum([1 for f in p.iterdir()]) == 0:
-    embed=discord.Embed(title="You have no flashcards!", description="use \"!flashcards add\" to add some!", color=color)
+    embed=discord.Embed(title="You have no flashcards!", \
+      description="use \"!flashcards add\" to add some!", color=color)
     await channel.send(embed=embed)
     return
   prefix = "flashcards\\" + str(member.id) + "\\"
@@ -70,7 +71,8 @@ async def study(client, member, channel):
   data = sorted(data, key=lambda x: x["priority"])
   
   def reaction_check(reaction, user):
-    return user == member and (str(reaction.emoji) == '🟢' or str(reaction.emoji) == '🟡' or str(reaction.emoji) == '🔴')
+    return user == member and (str(reaction.emoji) == '🟢' or \
+      str(reaction.emoji) == '🟡' or str(reaction.emoji) == '🔴')
 
   next = []
   cont = 1
@@ -103,7 +105,8 @@ async def study(client, member, channel):
       if reaction == '🟢':
         question["priority"] = min(question["priority"] + 1, 3)
     
-    embed=discord.Embed(title="End of flashcards in " + selection + ".", description="Type \"continue\" to start again.", color=color)
+    embed=discord.Embed(title="End of flashcards in " + selection + ".", \
+      description="Type \"continue\" to start again.", color=color)
     await channel.send(embed=embed)
     try:
       reply = await client.wait_for('message', check=check, timeout=timeout)
@@ -114,7 +117,8 @@ async def study(client, member, channel):
       cont = 0
 
   if len(next) > 0:
-    embed=discord.Embed(title="Go through hard questions again?" , description="Type \"yes\" to proceed.", color=color)
+    embed=discord.Embed(title="Go through hard questions again?", \
+      description="Type \"yes\" to proceed.", color=color)
     await channel.send(embed=embed)
     try:
       message = await client.wait_for('message', check=check, timeout=timeout)
@@ -183,7 +187,8 @@ async def add(client, member, channel):
   except asyncio.exceptions.TimeoutError:
     return
   name = name.content
-  name = name.replace("<", "").replace(">", "").replace(":", "").replace("\"", "").replace("/", "").replace("\\", "").replace("|", "").replace("?", "").replace("*", "")
+  name = name.replace("<", "").replace(">", "").replace(":", "").replace("\"", "").replace("/", "")\
+          .replace("\\", "").replace("|", "").replace("?", "").replace("*", "")
   # name.replace(" ", "_")
 
   output = []
@@ -312,7 +317,8 @@ async def change_preferences(client, member, channel):
   selection = selection.content.lower()
 
   if selection == "color":
-    embed=discord.Embed(title="Enter your new color (0x6bb3ff by default)", description="Current color is " + str(hex(color)), color=color)
+    embed=discord.Embed(title="Enter your new color (0x6bb3ff by default)", \
+      description="Current color is " + str(hex(color)), color=color)
     await channel.send(embed=embed)
     try:
       new_color = await client.wait_for('message', check=check, timeout=timeout)
@@ -323,7 +329,8 @@ async def change_preferences(client, member, channel):
     embed=discord.Embed(title="Your new color is " + str(hex(new_color)), color=new_color)
     await channel.send(embed=embed)
   elif selection == "timeout":
-    embed=discord.Embed(title="Enter your new timeout (15s default)", description="Current timeout is " + str(timeout), color=color)
+    embed=discord.Embed(title="Enter your new timeout (15s default)", \
+      description="Current timeout is " + str(timeout), color=color)
     await channel.send(embed=embed)
     try:
       new_timeout = await client.wait_for('message', check=check, timeout=timeout)
@@ -404,7 +411,8 @@ async def help(member, channel):
   """
   Sends a message with the descriptions for different commands.
   """
-  embed=discord.Embed(title="This is the help section for flashcards", description="Type \"stop\" to stop in any submenus", color=0x6bb3ff)
+  embed=discord.Embed(title="This is the help section for flashcards", \
+    description="Type \"stop\" to stop in any submenus", color=0x6bb3ff)
   embed.add_field(name="Add", value="Make a new study section or append to a current study section", inline=False)
   embed.add_field(name="Study", value="Review flashcards in a study section", inline=False)
   embed.add_field(name="Remove", value="Remove either a section or a question from a sesction", inline=False)
