@@ -6,6 +6,27 @@ import asyncio
 from discord.ext import commands
 
 async def study(client, member, channel):
+  """
+  Lists the sections available to review, if there is at least one nonempty 
+  section in the user's directory. Otherwise, state that there are no
+  sections available for review.
+
+  If the user successfully chooses a section, start going through all the 
+  questions in that section, sorted by how important the question is.
+
+  A question's importance, or priority, is stored alongside the question in
+  the section file. The default priority is 2. The priority may go up to 1
+  if the user reacts with the green symbol, or go down to 3 if the user 
+  reacts with the red symbol. If the user reacts with the yellow symbol,
+  the question's priority remains the same.
+
+  After going through all the questions, the user may type "continue" to
+  go through all the questions again. If not, the user may choose to go 
+  through the questions they reacted red to again by replying "yes."
+
+  The updated priorities are written into the same section after excecution
+  of this function.
+  """
   p = get_default_path(member)
   preferences = await load_preferences(member, channel)
   timeout = preferences["timeout"]
@@ -132,6 +153,19 @@ async def study(client, member, channel):
   
 
 async def add(client, member, channel):
+  """
+  Adds a new section for the user to review in the future, if the provided 
+  name is unique. Otherwise, the new content is appended to the end of the
+  existing section.
+
+  A section's name cannot contain characters not allowed in filenames.
+
+  The user is prompted for questions and answers to be added into the 
+  section. The default priority for every question is 2. This will be 
+  repeated until the user enters "stop" on a question prompt. If the answer
+  entered one or more questions in this period, the questions and answers
+  are written into the section's file.
+  """
   p = get_default_path(member)
   p.mkdir(parents=True, exist_ok=True)
   preferences = await load_preferences(member, channel)
@@ -180,7 +214,7 @@ async def add(client, member, channel):
 
   if len(output) > 0:
     p = p / (name + ".json")
-    with p.open('a') as f:
+    with p.open("a") as f:
       json.dump(output, f)
     embed=discord.Embed(title="Category " + name + " added.", color=color)
     await channel.send(embed=embed)
@@ -245,6 +279,20 @@ async def remove(client, member, channel):
     await remove(client, member, channel)
 
 async def change_preferences(client, member, channel):
+  """
+  Allows for the timeout for interactions and color of the embed to be 
+  changed per user.
+  
+  Upon calling this function, the user is asked whether they would like to 
+  change their color or their timeout.
+
+  If the user chooses "color," they are prompted for a hexadecimal 
+  representation for a color. The default color is "0x6bb3ff."
+
+  If the user chooses "timeout," they are prompted for an integer
+  representing the new timeout they would like. The default timeout is 15
+  seconds.
+  """
   def check(m):
     return m.author == member and m.channel == channel
 
@@ -281,7 +329,12 @@ async def change_preferences(client, member, channel):
       new_timeout = await client.wait_for('message', check=check, timeout=timeout)
     except asyncio.exceptions.TimeoutError:
       return
-    new_timeout = int(new_timeout.content)
+    try:
+      new_timeout = int(new_timeout.content)
+    except:
+      embed=discord.Embed(title="Invalid timeout", color=color)
+      await channel.send(embed=embed)
+      return
     preferences["timeout"] = new_timeout
     embed=discord.Embed(title="Your new timeout is " + str(new_timeout), color=color)
     await channel.send(embed=embed)
@@ -296,6 +349,9 @@ def get_default_path(member):
   return pathlib.Path("flashcards/" + str(member.id))
 
 async def get_options(client, member, channel):
+  """
+  Lists the available sections for the passed user. Return their selection.
+  """
   p = get_default_path(member)
 
   preferences = await load_preferences(member, channel)
@@ -325,6 +381,12 @@ async def get_options(client, member, channel):
   return selection.content + ".json"
 
 async def load_preferences(member, channel):
+  """
+  Load the preferences belonging to the current user, if it exists. Otherwise,
+  create a new preference file which is named the ID of the user.
+
+  The available preferences are timeout and color.
+  """
   p = pathlib.Path("config/" + str(member.id) + ".json")
   if p.exists():
     with p.open("r") as f:
@@ -339,6 +401,9 @@ async def load_preferences(member, channel):
     return settings
 
 async def help(member, channel):
+  """
+  Sends a message with the descriptions for different commands.
+  """
   embed=discord.Embed(title="This is the help section for flashcards", description="Type \"stop\" to stop in any submenus", color=0x6bb3ff)
   embed.add_field(name="Add", value="Make a new study section or append to a current study section", inline=False)
   embed.add_field(name="Study", value="Review flashcards in a study section", inline=False)
