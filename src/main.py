@@ -23,7 +23,7 @@ async def hello(ctx):
   await ctx.send(msg.content)
 
 @client.command()
-async def flashcards(ctx, arg1 = ""):
+async def flashcards(ctx, arg1 = "", arg2 = ""):
   channel = ctx.channel
   member = ctx.author
   
@@ -46,8 +46,8 @@ async def flashcards(ctx, arg1 = ""):
     await flashcards_external.add(client, member, channel)
   elif arg1 == "remove":
     await flashcards_external.remove(client, member, channel)
-  elif arg1 == "change preferences":
-    print("change preferences")
+  elif arg1 == "change" and arg2 == "preferences":
+    await flashcards_external.change_preferences(client, member, channel)
   else:
     embed = discord.Embed(title="Invalid Option")
     await ctx.send(embed=embed)
