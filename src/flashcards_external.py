@@ -17,7 +17,7 @@ async def study(client, member, channel):
     return
   prefix = "flashcards\\" + str(member.id) + "\\"
   
-  embed=discord.Embed(title="Available flashcards:", description="\"stop\" to exit", color=color)
+  embed=discord.Embed(title="Available flashcards:", color=color)
   for path in p.iterdir():
     name = str(path).removeprefix(prefix)[:-5]
     last_modified = datetime.datetime.fromtimestamp(path.stat().st_ctime)
@@ -58,9 +58,14 @@ async def study(client, member, channel):
       embed=discord.Embed(title="Question: " + question["question"], color=color)
       await channel.send(embed=embed)
       try:
-        await client.wait_for('message', check=check)
+        question_response = await client.wait_for('message', check=check)
       except asyncio.exceptions.TimeoutError:
         return
+
+      question_response = question_response.content
+      if question_response == "stop":
+        return
+        
       embed=discord.Embed(title="Expected Answer: " + question["answer"], color=color)
       sent_message = await channel.send(embed=embed)
       await sent_message.add_reaction('🔴')
@@ -100,9 +105,13 @@ async def study(client, member, channel):
         embed=discord.Embed(title="Question: " + question["question"], color=color)
         await channel.send(embed=embed)
         try:
-          await client.wait_for('message', check=check, timeout=timeout)
+          question_response = await client.wait_for('message', check=check, timeout=timeout)
         except asyncio.exceptions.TimeoutError:
           return
+        question_response = question_response.content
+        if question_response == "stop":
+          return
+
         embed=discord.Embed(title="Expected Answer: " + question["answer"], color=color)
         sent_message = await channel.send(embed=embed)
         await sent_message.add_reaction('🔴')
@@ -184,7 +193,7 @@ async def remove(client, member, channel):
   timeout = preferences["timeout"]
   color = preferences["color"]
 
-  embed=discord.Embed(title="Please enter an item to remove.", description="Type \"stop\" to exit", color=color)
+  embed=discord.Embed(title="Please enter an item to remove", color=color)
   embed.add_field(name="Question", value="Remove a question from a section", inline=False)
   embed.add_field(name="Section", value="Remove an entire section", inline=False)
   await channel.send(embed=embed)
@@ -204,7 +213,7 @@ async def remove(client, member, channel):
     data = None
     with p.open("r") as f:
       data = json.load(f)
-    embed=discord.Embed(title="Please enter the question.")
+    embed=discord.Embed(title="Please enter the question")
     await channel.send(embed=embed)
     try:
       question = await client.wait_for('message', check=check, timeout=timeout)
@@ -222,10 +231,11 @@ async def remove(client, member, channel):
   elif selection == "section":
     p = get_default_path(member)
     section = await get_options(client, member, channel)
-    if section == -1:
-      return
     p = p / section
-    p.unlink()
+    try:
+      p.unlink()
+    except:
+      pass
     embed=discord.Embed(title="Section " + section[:-5] + " removed.", color=color)
     await channel.send(embed=embed)
     return
@@ -243,9 +253,9 @@ async def change_preferences(client, member, channel):
   color = preferences["color"]
   timeout = preferences["timeout"]
 
-  embed=discord.Embed(title="Enter the preference you would like to change.", color=color)
-  embed.add_field(name="Color", value="Change the embed color.", inline=False)
-  embed.add_field(name="Timeout", value="Change the amount of time you have to respond to questions.", inline=False)
+  embed=discord.Embed(title="Enter the preference you would like to change", color=color)
+  embed.add_field(name="Color", value="Change the embed color", inline=False)
+  embed.add_field(name="Timeout", value="Change the amount of time you have to respond to questions", inline=False)
   await channel.send(embed=embed)
   try:
     selection = await client.wait_for('message', check=check, timeout=timeout)
@@ -254,7 +264,7 @@ async def change_preferences(client, member, channel):
   selection = selection.content.lower()
 
   if selection == "color":
-    embed=discord.Embed(title="Enter your new color (0x6bb3ff by default).", description="Current color is " + str(hex(color)), color=color)
+    embed=discord.Embed(title="Enter your new color (0x6bb3ff by default)", description="Current color is " + str(hex(color)), color=color)
     await channel.send(embed=embed)
     try:
       new_color = await client.wait_for('message', check=check, timeout=timeout)
@@ -264,9 +274,8 @@ async def change_preferences(client, member, channel):
     preferences["color"] = new_color
     embed=discord.Embed(title="Your new color is " + str(hex(new_color)), color=color)
     await channel.send(embed=embed)
-    return
   elif selection == "timeout":
-    embed=discord.Embed(title="Enter your new timeout (15s default).", description="Current timeout is " + str(timeout), color=color)
+    embed=discord.Embed(title="Enter your new timeout (15s default)", description="Current timeout is " + str(timeout), color=color)
     await channel.send(embed=embed)
     try:
       new_timeout = await client.wait_for('message', check=check, timeout=timeout)
@@ -276,9 +285,8 @@ async def change_preferences(client, member, channel):
     preferences["timeout"] = new_timeout
     embed=discord.Embed(title="Your new timeout is " + str(new_timeout), color=color)
     await channel.send(embed=embed)
-    return
   else:
-    embed=discord.Embed(title="Invalid Option.", color=color)
+    embed=discord.Embed(title="Invalid Option", color=color)
     await channel.send(embed=embed)
     return
   with p.open("w") as f:
@@ -332,4 +340,9 @@ async def load_preferences(member, channel):
     return settings
 
 async def help(member, channel):
-  pass
+  embed=discord.Embed(title="This is the help section for flashcards", description="Type \"stop\" to stop in any submenus", color=0x6bb3ff)
+  embed.add_field(name="Add", value="Make a new study section or append to a current study section", inline=False)
+  embed.add_field(name="Study", value="Review flashcards in a study section", inline=False)
+  embed.add_field(name="Remove", value="Remove either a section or a question from a sesction", inline=False)
+  embed.add_field(name="Change Preferences", value="Change either color or timeout", inline=False)
+  await channel.send(embed=embed)

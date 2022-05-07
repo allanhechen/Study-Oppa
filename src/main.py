@@ -24,6 +24,12 @@ async def hello(ctx):
   await ctx.send(msg.content)
 
 @client.command()
+async def help(ctx, arg1):
+  if arg1 == "flashcards":
+    await flashcards_external.help(ctx.author, ctx.channel)
+    return
+
+@client.command()
 async def flashcards(ctx, arg1 = "", arg2 = ""):
   channel = ctx.channel
   member = ctx.author
@@ -39,6 +45,7 @@ async def flashcards(ctx, arg1 = "", arg2 = ""):
     embed.add_field(name="Study", value="Study available flashcards", inline=False)
     embed.add_field(name="Add", value="Add new flashcards", inline=False)
     embed.add_field(name="Remove", value="Remove existing flashcards", inline=False)
+    embed.add_field(name="Change Preferences", value="Change color and timeout", inline=False)
     await ctx.send(embed=embed)
     try:
       arg1 = await client.wait_for('message', check=check, timeout=timeout)
@@ -55,6 +62,8 @@ async def flashcards(ctx, arg1 = "", arg2 = ""):
   elif arg1 == "change" and arg2 == "preferences" or arg1 == "change preferences":
     await flashcards_external.change_preferences(client, member, channel)
   elif arg1 == "stop":
+    return
+  elif "!" in arg1:
     return
   else:
     embed = discord.Embed(title="Invalid Option")
