@@ -2,6 +2,7 @@ import asyncio
 import discord
 import json
 from discord.ext import commands
+from discord.ext import tasks
 import flashcards_external
 import pomodoro
 import toDoList 
@@ -17,6 +18,16 @@ def init():
 async def on_ready():
   print("ready")
   client.load_extension('pomodoro')
+  await update_count()
+
+
+@tasks.loop(minutes=10)
+async def update_count():
+  total = 0
+  for guild in client.guilds:
+    total += guild.member_count
+  await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=" over " + str(total) + " users study"))
+
 
 @client.command()
 async def hello(ctx):
