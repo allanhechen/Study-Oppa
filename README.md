@@ -5,7 +5,13 @@
 #### Here's what our bot can and cannot do
 
 ## Pomodoro
-- [ ] xyz
+- [x] Create basic pomodoro timer
+- [x] Add end function
+- [x] Make bot output into formatted embeds
+- [x] Ping users that react to message when periods end
+- [ ] Join user call and play audio indicating end of periods
+- [ ] Have multiple instances of pomodoro timers for different calls/users
+
 ## Calendar
 - [ ] xyz
 
