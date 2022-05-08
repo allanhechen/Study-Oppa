@@ -50,6 +50,7 @@ async def hello(ctx):
 async def help(ctx, arg1 = ""):
   if arg1 == "flashcards":
     await flashcards_external.help(ctx.author, ctx.channel)
+    return
   elif arg1 == "pomodoro":
     await pomodoro.help(ctx.author, ctx.channel)
     return
