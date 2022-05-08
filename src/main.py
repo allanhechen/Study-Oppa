@@ -38,7 +38,7 @@ async def hello(ctx):
   await ctx.send(msg.content)
 
 @client.command()
-async def help(ctx, arg1):
+async def help(ctx, arg1 = ""):
   if arg1 == "flashcards":
     await flashcards_external.help(ctx.author, ctx.channel)
   elif arg1 == "pomodoro":
