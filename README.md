@@ -5,8 +5,8 @@
 #### Here's what our bot can and cannot do
 
 - [ ] Be your friend
-- [ ] Help you study
-- [ ] Help you organize your time
+- [x] Help you study
+- [x] Help you organize your time
 
 ## Pomodoro
 - [x] Create basic pomodoro timer
