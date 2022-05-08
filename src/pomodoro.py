@@ -9,6 +9,7 @@ class Pomodoro(commands.Cog):
         self.client = client
         self.users = []
         self.timer = Timer()
+        self.startID = ""
 
     @commands.command()
     async def pomostart(self, ctx):
@@ -47,8 +48,9 @@ class Pomodoro(commands.Cog):
 
             embed = Embed(title="**Pomodoro Timer**", description = f"**{studyMinutes}** minute(s) study time\n**{breakMinutes}** minute(s) break time\n\n*React to be pinged!*", color=0x8EA8FB)
             startMsg = await ctx.send(embed=embed)
-            global startID
-            startID = startMsg.id
+            # global startID
+            # startID = startMsg.id
+            self.startID = startMsg.id
 
             await startMsg.add_reaction("✅")
             await startMsg.add_reaction("❌")
@@ -97,7 +99,7 @@ class Pomodoro(commands.Cog):
         
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):
-        if reaction.message.id == startID:
+        if reaction.message.id == self.startID:
             if reaction.emoji == "✅":
                 if (user.id not in self.users):
                     self.users.append(user.id)
