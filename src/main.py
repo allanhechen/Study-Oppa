@@ -5,19 +5,28 @@ from discord.ext import commands
 from discord.ext import tasks
 import flashcards_external
 import pomodoro
-import toDoList 
+import toDoList
+import pathlib
 
+def read_config():
+  p = pathlib.Path("config/config.json")
+  with p.open("r") as f:
+    config = json.load(f)
+    return config
+
+config = read_config()
 intents = discord.Intents.default()
-client = commands.Bot(command_prefix="!", intents=intents)
+client = commands.Bot(command_prefix=config["prefix"], intents=intents)
 client.help_command = None
 
 def init():
-  client.run("OTcyMzc3MTIwNzY2NTYyMzU0.YnYKww.qh8S6x2h0AIDfXgj-8J30_3RjVM")
+  client.run(config["ID"])
+
 
 @client.event
 async def on_ready():
-  print("ready")
   client.load_extension('pomodoro')
+  print("ready")
   await update_count()
 
 
