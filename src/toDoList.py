@@ -2,6 +2,7 @@ import discord
 import json
 import pathlib
 import datetime
+from discord import Embed
 from discord.ext import commands
 from datetime import date
 
@@ -13,6 +14,7 @@ class ToDoList(commands.Cog):
     @commands.command()
     async def add(self,ctx, *, task):
         toDoList = {}
+        priority = {}
         
         taskName = task
         dueDate = None
@@ -33,6 +35,20 @@ class ToDoList(commands.Cog):
                     datetime.datetime.strptime(dueDate, "%m/%d/%Y %H:%M")
                     toDoList['Task Name'] = taskName
                     toDoList['Due Date'] = dueDate
+
+                    await ctx.send("What is the priority of the task? [High, Med, Low, None]")
+                    priorityA = await self.client.wait_for("message", check=check)
+                    while (priorityA.content.lower() != 'high' and priorityA.content.lower() != 'med' and priorityA.content.lower() != 'low' and priorityA.content.lower() != 'none'):
+                        await ctx.send("Invalid input. Please try again!\nWhat is the priority of the task? [High, Med, Low, None]")
+                        priorityA = await self.client.wait_for("message", check=check)
+                    if (priorityA.content.lower() == 'high'):
+                        priority["HIGH"] = toDoList
+                    elif (priorityA.content.lower() == 'med'):
+                        priority["MED"] = toDoList
+                    elif (priorityA.content.lower() == 'low'):
+                        priority["LOW"] = toDoList
+                    else:
+                        priority["NONE"] = toDoList
                     fileName = str(ctx.author.id) + ".json"
                     path = pathlib.Path("todolists/" + fileName)
                     output = []
@@ -47,7 +63,7 @@ class ToDoList(commands.Cog):
                         json.dump(output, file)
                     msg = discord.Embed(
                         title = taskName,
-                        description = f'Successfully Added Task:\nTitle: {taskName}\nDue Date & Time: {dueDate}',
+                        description = f'Successfully Added Task :)\nTask: {taskName}\nDue Date & Time: {dueDate}\nPriority: {priorityA.content.upper()}',
                         color = 0x00FFFF
                     )
                     await ctx.send(embed=msg)
@@ -75,3 +91,9 @@ class ToDoList(commands.Cog):
 
 def setup(client):
     client.add_cog(ToDoList(client))
+
+async def help(member, channel):
+    embed = Embed(title="This is the help section for to-do list", description="", color=0x8EA8FB)
+    embed.add_field(name="!add", value="Adds a new task to the to-do list following the format: task name - 05/26/2022 22:24.", inline=False)
+    embed.add_field(name="!remove", value="Removes task from the to-do list.", inline=False)
+    await channel.send(embed=embed)

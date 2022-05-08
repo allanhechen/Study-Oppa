@@ -3,9 +3,10 @@ import discord
 import json
 from discord.ext import commands
 from discord.ext import tasks
+import pathlib
 import flashcards_external
 import pomodoro
-import pathlib
+import todolist
 
 def read_config():
   p = pathlib.Path("config/config.json")
@@ -20,7 +21,6 @@ client.help_command = None
 
 def init():
   client.run(config["ID"])
-
 
 @client.event
 async def on_ready():
@@ -53,6 +53,8 @@ async def help(ctx, arg1 = ""):
   elif arg1 == "pomodoro":
     await pomodoro.help(ctx.author, ctx.channel)
     return
+  elif arg1 == "todolist":
+    await todolist.help(ctx.author, ctx.channel)
 
 @client.command()
 async def flashcards(ctx, arg1 = "", arg2 = ""):
