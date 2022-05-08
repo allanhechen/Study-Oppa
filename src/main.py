@@ -48,13 +48,24 @@ async def hello(ctx):
 
 @client.command()
 async def help(ctx, arg1 = ""):
+  embed=discord.Embed(title="This is Study Oppa's default help menu.", description="Choose one of the options below to learn more", color=0x8EA8FB)
+  embed.add_field(name="flashcards", value="flashcards but in Discord!", inline=False)
+  embed.add_field(name="pomodoro", value="advanced studying technique", inline=False)
+  embed.add_field(name="todolist", value="keeps track of what's left to do", inline=False)
+  await ctx.send(embed=embed)
   if arg1 == "flashcards":
     await flashcards_external.help(ctx.author, ctx.channel)
+    return
   elif arg1 == "pomodoro":
     await pomodoro.help(ctx.author, ctx.channel)
     return
   elif arg1 == "todolist":
     await todolist.help(ctx.author, ctx.channel)
+  elif "!" in arg1:
+    return
+  else:
+    embed=discord.Embed(title="Invalid Options")
+    await ctx.send(embed=embed)
 
 @client.command()
 async def flashcards(ctx, arg1 = "", arg2 = ""):
