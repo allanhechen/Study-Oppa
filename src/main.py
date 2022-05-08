@@ -3,7 +3,8 @@ import discord
 import json
 from discord.ext import commands
 import flashcards_external
-import toDoList
+import pomodoro
+import toDoList 
 
 intents = discord.Intents.default()
 client = commands.Bot(command_prefix="!", intents=intents)
@@ -15,6 +16,7 @@ def init():
 @client.event
 async def on_ready():
   print("ready")
+  client.load_extension('pomodoro')
 
 @client.command()
 async def hello(ctx):
@@ -28,6 +30,8 @@ async def hello(ctx):
 async def help(ctx, arg1):
   if arg1 == "flashcards":
     await flashcards_external.help(ctx.author, ctx.channel)
+  elif arg1 == "pomodoro":
+    await pomodoro.help(ctx.author, ctx.channel)
     return
 
 @client.command()
