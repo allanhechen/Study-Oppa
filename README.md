@@ -1,6 +1,6 @@
 # Study Oppa (RU Hacks 2022)
 <p> Wow! this is our Bot that we're making for RUHacks 2022 </p>
-<p> Come visit check out our Devpost [here](https://devpost.com/software/study-oppa) </p>
+<p> Come visit check out our Devpost <a href="https://devpost.com/software/study-oppa">here</a></p>
 
 #### Here's what our bot can and cannot do
 
