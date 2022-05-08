@@ -123,10 +123,26 @@ async def addbusy(ctx):
   await channel.send(embed=embed)
   reply = await client.wait_for('message', check=check)
   reply = reply.content
-  embed=discord.Embed(title=reply.content + " added to busy days.", color=0x8EA8FB)
+  embed=discord.Embed(title=reply + " added to busy days.", color=0x8EA8FB)
+  await channel.send(embed=embed)
 
 @client.command()
-async def addbusy(ctx):
+async def removebusy(ctx):
+  channel = ctx.channel
+  member = ctx.author
+
+  def check(m):
+    return m.author == member and m.channel == channel
+
+  embed=discord.Embed(title="Which day would you like to remove " + member.display_name + "?", color=0x8EA8FB)
+  await channel.send(embed=embed)
+  reply = await client.wait_for('message', check=check)
+  reply = reply.content
+  embed=discord.Embed(title=reply + " removed from busy days.", color=0x8EA8FB)
+  await channel.send(embed=embed)
+
+@client.command()
+async def perfectday(ctx):
   channel = ctx.channel
   member = ctx.author
 
