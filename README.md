@@ -4,6 +4,10 @@
 
 #### Here's what our bot can and cannot do
 
+- [ ] Be your friend
+- [ ] Help you study
+- [ ] Help you organize your time
+
 ## Pomodoro
 - [x] Create basic pomodoro timer
 - [x] Add end function
@@ -21,9 +25,3 @@
 - [x] Customize how long you have to enter your answers
 - [ ] Use an offsite database to store the user's questions
 - [ ] Use the bot in your direct messages
-
----
-
-- [ ] Be your friend
-- [ ] Help you study
-- [ ] Help you organize your time
