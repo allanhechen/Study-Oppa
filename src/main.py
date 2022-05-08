@@ -35,7 +35,7 @@ async def update_count():
   total = 0
   for guild in client.guilds:
     total += guild.member_count
-  await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=" over " + str(total) + " users study"))
+  await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=str(total) + " users studying"))
 
 
 @client.command()
