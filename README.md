@@ -1,27 +1,21 @@
-# Bot Oppar (RU Hacks 2022)
+# Study Oppa (RU Hacks 2022)
 Wow! this is our Bot that we're making for RUHacks 2022
+Come visit check out our Devpost [here](https://devpost.com/software/study-oppa)
 
-### Andrae's To Do List
-- [x] Main functionality of pomodoro
-- [x] Start pomo
-- [x] End pomo
-- [x] Errors
-- [ ] Generalize format and theme of bot
-- [ ] profile picture for bot?
+#### Here's what our bot can and cannot do
 
+## Pomodoro
+[ ] xyz
+## Calendar
+[ ] xyz
 
-### Allan's To Do List
-- [ ] lol
+## Flashcards
+[x] Add and remove flashcards
+[x] Have personalized settings for each user
+[x] Customize how long you have to enter your answers
+[ ] Use an offsite database to store the user's questions
+[ ] Use the bot in your direct messages
 
-
-### Jenn's To Do List
-- [ ] lol
-
-
-### Woosung's To Do List
-- [ ] lol
-
-
-### Vivian's To Do List
-- [ ] lol
-
+[ ] Be your friend
+[x] Help you study
+[x] Help you organize your time
