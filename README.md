@@ -25,3 +25,6 @@
 - [x] Customize how long you have to enter your answers
 - [ ] Use an offsite database to store the user's questions
 - [ ] Use the bot in your direct messages
+
+## To Do Lists 
+- [ ] xyz
