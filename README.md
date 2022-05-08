@@ -16,8 +16,10 @@
 - [ ] Join user call and play audio indicating end of periods
 - [ ] Have multiple instances of pomodoro timers for different calls/users
 
-## Calendar
-- [ ] xyz
+## Weekly Calendar
+- [x] Adds busy schedule to the Weekly calendar
+- [ ] Eliminates the dates where someone's busy
+- [ ] Shows which times is when everyone is free
 
 ## Flashcards
 - [x] Add and remove flashcards
@@ -27,4 +29,7 @@
 - [ ] Use the bot in your direct messages
 
 ## To Do Lists 
-- [ ] xyz
+- [x] Add and remove Tasks with Date/Time
+- [x] Give priority to each tasks
+- [x] Create sorted lists (Chronological and Priority orders)
+- [ ] Automate bot to send Notification to user's DM
