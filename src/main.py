@@ -5,7 +5,6 @@ from discord.ext import commands
 from discord.ext import tasks
 import flashcards_external
 import pomodoro
-import toDoList
 import pathlib
 
 def read_config():
@@ -26,6 +25,7 @@ def init():
 @client.event
 async def on_ready():
   client.load_extension('pomodoro')
+  client.load_extension("todolist")
   print("ready")
   await update_count()
 
@@ -95,35 +95,5 @@ async def flashcards(ctx, arg1 = "", arg2 = ""):
   else:
     embed = discord.Embed(title="Invalid Option")
     await ctx.send(embed=embed)
-
-# @client.command()
-# async def toDoList(ctx, arg1 = "", arg2 = ""):
-#   channel = ctx.channel
-#   member = ctx.author
-  
-#   if arg1 == "addItem":
-#     await toDoList.add(ctx, *, item)
-#   else:
-#     embed = discord.Embed(title="Invalid Option")
-#     await ctx.send(embed=embed)
-
- #dictionary key = scheduleTitle, value = dateTime
-list = {}
-@client.command()
-async def add(ctx, *, item):
-    dateTime = item[-16:len(item)]
-    taskTitle = item[:-17]
-    list[taskTitle] = dateTime
-    # await ctx.send(f'Date & Time: {dateTime}\nTitle: {scheduleTitle}')
-    
-    p = "person1List.json"
-    with p.open('a') as f:
-      json.dump(list, f)
-    msg = discord.Embed(
-      title = 'Testing',
-      description = f'Date & Time: {list.values()}\nTitle: {list.keys()}',
-      color = 0x00FFFF
-    )
-    await ctx.send(embed=msg)
 
 init()
