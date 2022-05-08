@@ -1,7 +1,7 @@
 from discord.ext import commands
 import asyncio
 from discord import Embed
-from timer import Timer, TimerStatus
+from timer import Timer, TimerStatus 
 
 class Pomodoro(commands.Cog):
     
