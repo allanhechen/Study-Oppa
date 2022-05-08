@@ -94,6 +94,6 @@ def setup(client):
 
 async def help(member, channel):
     embed = Embed(title="This is the help section for to-do list", description="", color=0x8EA8FB)
-    embed.add_field(name="!add", value="Adds a new task to the to-do list following the format: task name - 05/26/2022 22:24.", inline=False)
+    embed.add_field(name="!add", value="Adds a new task to the to-do list following the format: task name - due date due time\nFor Example: Submit Hackathon Project - 05/08/2022 09:30\n*The time should by given in 24 hour clock style*", inline=False)
     embed.add_field(name="!remove", value="Removes task from the to-do list.", inline=False)
     await channel.send(embed=embed)
