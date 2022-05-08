@@ -11,6 +11,7 @@ class ToDoList(commands.Cog):
     def __init__(self,client):
         self.client = client
     
+    # add command that allows user to add a task to their to-do list
     @commands.command()
     async def add(self,ctx, *, task):
         toDoList = {}
@@ -53,21 +54,22 @@ class ToDoList(commands.Cog):
                         priority["NONE"] = newList
 
                     # json file format for printSchedule function
-                    fileName = str(ctx.author) + ".json"
-                    name = fileName.replace("#", "")
-                    path = pathlib.Path("todolists/" + name)
-                    output1 = []
-                    output1.append(priority)
-                    prior1 = []
-                    if (path.exists()):
-                        with path.open("r") as file:
-                            prior1 = json.load(file)
-                    for item in prior1:
-                        output1.append(item)
-                    with path.open("w") as file:
-                        json.dump(output1, file)
+                    # fileName = str(ctx.author) + ".json"
+                    # name = fileName.replace("#", "")
+                    # path = pathlib.Path("todolists/" + name)
+                    # output1 = []
+                    # output1.append(priority)
+                    # prior1 = []
+                    # if (path.exists()):
+                    #     with path.open("r") as file:
+                    #         prior1 = json.load(file)
+                    # for item in prior1:
+                    #     output1.append(item)
+                    # with path.open("w") as file:
+                    #     json.dump(output1, file)
 
                     # json file format for remove function
+                    # formats and puts data into json file
                     fileName = str(ctx.author.id) + ".json"
                     path = pathlib.Path("todolists/" + fileName)
                     output = []
@@ -89,6 +91,7 @@ class ToDoList(commands.Cog):
                 except ValueError:
                     await ctx.send("Sorry, that is in the incorrect format. Please try the function again.\n*Reminder: The format for due date is mm/dd/yyyy hh:mm (e.g 08/05/2022 22:14)*")
  
+    # remove command that allows user to add a task to their to-do list
     @commands.command()
     async def remove(ctx, *, taskTitle):
         fileName = str(ctx.author.id) + ".json"
@@ -108,6 +111,7 @@ class ToDoList(commands.Cog):
         )
         await ctx.send(embed=msg)
 
+    # print command that allows user to see their to-do list in a sorted order
     @commands.command()
     async def printSchedule(self, ctx):
 
@@ -116,11 +120,11 @@ class ToDoList(commands.Cog):
             channel = ctx.channel
             return m.author == author and m.channel == channel
         
-        fileName = str(ctx.author) + ".json"
-        name = fileName.replace("#", "")
-        path = pathlib.Path("todolists/" + name)
-        f = path.open(fileName)
-        data = json.load(f)
+        # fileName = str(ctx.author) + ".json"
+        # name = fileName.replace("#", "")
+        # path = pathlib.Path("todolists/" + name)
+        # f = path.open(fileName)
+        # data = json.load(f)
         
         # @param list 
         # @returns a sorted list
@@ -158,7 +162,6 @@ class ToDoList(commands.Cog):
             String+= "```"
             
             return String
-
 
         # @param Dictionary
         # @return Print priority ordered list
@@ -235,13 +238,28 @@ class ToDoList(commands.Cog):
             return discord.Embed(title= word + " invalid, call command again.\n")
         
         #Asks user which sorted method they want to see the schedule
+        # embed=discord.Embed(title="Sort schedule by...", description="\"chronological\" or \"priority\" order?")
+        # await ctx.send(embed=embed)
+        
+        # word = await self.client.wait_for('message', check=check)
+        # word = word.content
+        
+        # await ctx.send(printSortedSchedule(data, word))
+        prioritized = { 
+                "LOW" : {"Eat food" : "02/18/2022 19:00" , "Eat dinner" : "03/18/2022 20:00"},
+                "MED" : {"Workout" : "02/18/2023 18:00", "Friend's Birthday" : "03/18/2022 19:00"},
+                "HIGH" : {"Finish Work" : "02/17/2023 19:00"},
+                "NONE" : {"Sleep" : "02/18/2022 23:00"}
+        }
+
+        #Asks user which sorted method they want to see the schedule
         embed=discord.Embed(title="Sort schedule by...", description="\"chronological\" or \"priority\" order?")
         await ctx.send(embed=embed)
-        
+
         word = await self.client.wait_for('message', check=check)
         word = word.content
-        
-        await ctx.send(printSortedSchedule(data, word))
+
+        await ctx.send(printSortedSchedule(prioritized, word))
 
 def setup(client):
     client.add_cog(ToDoList(client))
@@ -250,4 +268,5 @@ async def help(member, channel):
     embed = Embed(title="This is the help section for to-do list", description="", color=0x8EA8FB)
     embed.add_field(name="!add", value="Adds a new task to the to-do list following the format: task name - due date due time\nFor Example: Submit Hackathon Project - 05/08/2022 09:30\n*The time should by given in 24 hour clock style*", inline=False)
     embed.add_field(name="!remove", value="Removes task from the to-do list.", inline=False)
+    embed.add_field(name="!printSchedule", value="Prints schedule in a sorted order.\n*Please Note this function is currently under working progress, however a demo version to available for you to test right now*", inline=False)
     await channel.send(embed=embed)

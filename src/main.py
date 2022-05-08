@@ -29,8 +29,6 @@ async def on_ready():
   client.load_extension("todolist")
   print("ready")
   await update_count()
-  # await scheduledMessage()
-
 
 @tasks.loop(minutes=10)
 async def update_count():
@@ -110,15 +108,5 @@ async def flashcards(ctx, arg1 = "", arg2 = ""):
   else:
     embed = discord.Embed(title="Invalid Option")
     await ctx.send(embed=embed)
-
-# async def scheduledMessage():
-#   uh = datetime.now()
-#   then = uh.replace(hour=3, minute=15)
-#   wait_time = (then-uh).total_seconds()
-#   await asyncio.sleep(wait_time)
-#   channel = client.get_channel(972396829759127562)
-
-#   await channel.send("You should #gotosleep!")
-#   await channel.send(file=discord.File('giphy.gif'))
 
 init()

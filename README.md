@@ -33,3 +33,5 @@
 - [x] Give priority to each tasks
 - [x] Create sorted lists (Chronological and Priority orders)
 - [ ] Automate bot to send Notification to user's DM
+- [ ] Allow user to decide whether they want a task to be repeated
+- [ ] Automatically remove task once it's the past due date
