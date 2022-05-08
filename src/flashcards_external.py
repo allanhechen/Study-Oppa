@@ -52,7 +52,7 @@ async def study(client, member, channel):
   try:
     selection = await client.wait_for('message', check=check, timeout=timeout)
   except asyncio.exceptions.TimeoutError:
-    await timeout(channel)
+    await timeout_message(channel)
     return
   selection = selection.content
 
@@ -84,7 +84,7 @@ async def study(client, member, channel):
       try:
         question_response = await client.wait_for('message', check=check)
       except asyncio.exceptions.TimeoutError:
-        await timeout(channel)
+        await timeout_message(channel)
         return
 
       question_response = question_response.content
@@ -99,7 +99,7 @@ async def study(client, member, channel):
       try:
         reaction = await client.wait_for('reaction_add', check=reaction_check, timeout=timeout)
       except asyncio.exceptions.TimeoutError:
-        await timeout(channel)
+        await timeout_message(channel)
         return
       reaction = reaction[0].emoji
       if reaction == '🔴':
@@ -114,7 +114,7 @@ async def study(client, member, channel):
     try:
       reply = await client.wait_for('message', check=check, timeout=timeout)
     except asyncio.exceptions.TimeoutError:
-      await timeout(channel)
+      await timeout_message(channel)
       return
     reply = reply.content.lower()
     if reply != "continue":
@@ -127,7 +127,7 @@ async def study(client, member, channel):
     try:
       message = await client.wait_for('message', check=check, timeout=timeout)
     except asyncio.exceptions.TimeoutError:
-      await timeout(channel)
+      await timeout_message(channel)
       return
     message = message.content.lower()
     if message == "yes":
@@ -137,7 +137,7 @@ async def study(client, member, channel):
         try:
           question_response = await client.wait_for('message', check=check, timeout=timeout)
         except asyncio.exceptions.TimeoutError:
-          await timeout(channel)
+          await timeout_message(channel)
           return
         question_response = question_response.content
         if question_response == "stop":
@@ -151,7 +151,7 @@ async def study(client, member, channel):
         try:
           reaction = await client.wait_for('reaction_add', check=reaction_check, timeout=timeout)
         except asyncio.exceptions.TimeoutError:
-          await timeout(channel)
+          await timeout_message(channel)
           return
         reaction = reaction[0].emoji
         if reaction == '🔴':
@@ -192,7 +192,7 @@ async def add(client, member, channel):
   try:
     name = await client.wait_for('message', check=check, timeout=timeout)
   except asyncio.exceptions.TimeoutError:
-    await timeout(channel)
+    await timeout_message(channel)
     return
   name = name.content
   name = name.replace("<", "").replace(">", "").replace(":", "").replace("\"", "").replace("/", "")\
@@ -206,7 +206,7 @@ async def add(client, member, channel):
     try:
       question = await client.wait_for('message', check=check, timeout=timeout)
     except asyncio.exceptions.TimeoutError:
-      await timeout(channel)
+      await timeout_message(channel)
       return
     question = question.content
     
@@ -218,7 +218,7 @@ async def add(client, member, channel):
     try:
       answer = await client.wait_for('message', check=check, timeout=timeout)
     except asyncio.exceptions.TimeoutError:
-      await timeout(channel)
+      await timeout_message(channel)
       return
     answer = answer.content
     current = {}
@@ -255,7 +255,7 @@ async def remove(client, member, channel):
   try:
     selection = await client.wait_for('message', check=check)
   except asyncio.exceptions.TimeoutError:
-    await timeout(channel)
+    await timeout_message(channel)
     return
   selection = selection.content
   if selection == "stop":
@@ -274,7 +274,7 @@ async def remove(client, member, channel):
     try:
       question = await client.wait_for('message', check=check, timeout=timeout)
     except asyncio.exceptions.TimeoutError:
-      await timeout(channel)
+      await timeout_message(channel)
       return
     question = question.content
     for i in range(len(data)):
@@ -331,7 +331,7 @@ async def change_preferences(client, member, channel):
   try:
     selection = await client.wait_for('message', check=check, timeout=timeout)
   except asyncio.exceptions.TimeoutError:
-    await timeout(channel)
+    await timeout_message(channel)
     return
   selection = selection.content.lower()
 
@@ -342,7 +342,7 @@ async def change_preferences(client, member, channel):
     try:
       new_color = await client.wait_for('message', check=check, timeout=timeout)
     except asyncio.exceptions.TimeoutError:
-      await timeout(channel)
+      await timeout_message(channel)
       return
     new_color = int(new_color.content, 16)
     preferences["color"] = new_color
@@ -355,7 +355,7 @@ async def change_preferences(client, member, channel):
     try:
       new_timeout = await client.wait_for('message', check=check, timeout=timeout)
     except asyncio.exceptions.TimeoutError:
-      await timeout(channel)
+      await timeout_message(channel)
       return
     try:
       new_timeout = int(new_timeout.content)
@@ -405,7 +405,7 @@ async def get_options(client, member, channel):
   try:
     selection = await client.wait_for('message', check=check, timeout=timeout)
   except asyncio.exceptions.TimeoutError:
-    await timeout(channel)
+    await timeout_message(channel)
     return
   return selection.content + ".json"
 
@@ -441,6 +441,6 @@ async def help(member, channel):
   embed.add_field(name="Change Preferences", value="Change either color or timeout", inline=False)
   await channel.send(embed=embed)
 
-async def timeout(channel):
-    embed=discord.Embed(title="Excecution timed out", color=0x6bb3ff)
-    await channel.send(embed=embed)
+async def timeout_message(channel):
+  embed=discord.Embed(title="Excecution timed out", color=0x6bb3ff)
+  await channel.send(embed=embed)
