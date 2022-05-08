@@ -1,11 +1,13 @@
 import asyncio
+from datetime import datetime
 import discord
 import json
 from discord.ext import commands
 from discord.ext import tasks
+import pathlib
 import flashcards_external
 import pomodoro
-import pathlib
+import todolist
 
 def read_config():
   p = pathlib.Path("config/config.json")
@@ -21,7 +23,6 @@ client.help_command = None
 def init():
   client.run(config["ID"])
 
-
 @client.event
 async def on_ready():
   client.load_extension('pomodoro')
@@ -29,13 +30,12 @@ async def on_ready():
   print("ready")
   await update_count()
 
-
 @tasks.loop(minutes=10)
 async def update_count():
   total = 0
   for guild in client.guilds:
     total += guild.member_count
-  await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=" over " + str(total) + " users study"))
+  await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=str(total) + " users study"))
 
 
 @client.command()
@@ -50,9 +50,24 @@ async def hello(ctx):
 async def help(ctx, arg1 = ""):
   if arg1 == "flashcards":
     await flashcards_external.help(ctx.author, ctx.channel)
+    return
   elif arg1 == "pomodoro":
     await pomodoro.help(ctx.author, ctx.channel)
     return
+  elif arg1 == "todolist":
+    await todolist.help(ctx.author, ctx.channel)
+    return
+  elif "!" in arg1:
+    return
+  else:
+    embed=discord.Embed(title="This is Study Oppa's default help menu.", description="Choose one of the options below to learn more", color=0x8EA8FB)
+    embed.add_field(name="flashcards", value="flashcards but in Discord!", inline=False)
+    embed.add_field(name="pomodoro", value="advanced studying technique", inline=False)
+    embed.add_field(name="todolist", value="keeps track of what's left to do", inline=False)
+    embed.add_field(name="calendar", value="align schedules with your friends", inline=False)
+    await ctx.send(embed=embed)
+    return
+
 
 @client.command()
 async def flashcards(ctx, arg1 = "", arg2 = ""):
@@ -96,4 +111,42 @@ async def flashcards(ctx, arg1 = "", arg2 = ""):
     embed = discord.Embed(title="Invalid Option")
     await ctx.send(embed=embed)
 
+@client.command()
+async def addbusy(ctx):
+  channel = ctx.channel
+  member = ctx.author
+
+  def check(m):
+    return m.author == member and m.channel == channel
+
+  embed=discord.Embed(title="When are you busy " + member.display_name + "?", color=0x8EA8FB)
+  await channel.send(embed=embed)
+  reply = await client.wait_for('message', check=check)
+  reply = reply.content
+  embed=discord.Embed(title=reply + " added to busy days.", color=0x8EA8FB)
+  await channel.send(embed=embed)
+
+@client.command()
+async def removebusy(ctx):
+  channel = ctx.channel
+  member = ctx.author
+
+  def check(m):
+    return m.author == member and m.channel == channel
+
+  embed=discord.Embed(title="Which day would you like to remove " + member.display_name + "?", color=0x8EA8FB)
+  await channel.send(embed=embed)
+  reply = await client.wait_for('message', check=check)
+  reply = reply.content
+  embed=discord.Embed(title=reply + " removed from busy days.", color=0x8EA8FB)
+  await channel.send(embed=embed)
+
+@client.command()
+async def perfectday(ctx):
+  channel = ctx.channel
+  member = ctx.author
+
+  embed=discord.Embed(title="Everyone is free on Saturday, May 14", color=0x8EA8FB)
+  await channel.send(embed=embed)
+  
 init()
